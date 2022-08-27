@@ -1,50 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity 0.8.16;
-
-contract TodoList{
-    
-    struct Todo{
-        string task;
-        bool checked;
-    }
-
-    mapping(address => Todo) public todo;
-
-    event CreateTask(address indexed addr, string indexed task);
-
-    function createTasks(address _addr, string memory _task) public {
-        Todo storage todos = todo[_addr];
-        todos.task = _task;
-        todos.checked = false;
-        emit CreateTask(_addr, _task);
-    }
-
-    function readTasks(address _addr) public view returns (string memory, bool){
-        return (todo[_addr].task, todo[_addr].checked);
-    }
-
-    function updateTask(address _addr, string memory _task) public {
-        todo[_addr].task = _task;
-    }
-
-    function toggleChecked(address _addr) public  {
-        todo[_addr].checked = todo[_addr].checked ? false : true;
-    }
-
-    function deleteTask(address _addr) public {
-        delete todo[_addr].task;
-        delete todo[_addr].checked;
-    }
-}// SPDX-License-Identifier: GPL-3.0
-
-pragma solidity 0.8.7;
-
-contract TodoList{
-    
-    struct Todo{
-        string task;// SPDX-License-Identifier: GPL-3.0
-
 pragma solidity 0.8.7;
 
 contract TodoList{
@@ -54,62 +9,45 @@ contract TodoList{
         bool checked;
     }
 
-    mapping(address => Todo) public todo;
 
-    event CreateTask(address indexed addr, string indexed task);
+    Todo[] public todos;
+    mapping (address => Todo) todo;
+    event CreateTask(uint index, string task);
+    event UpdateTask(uint index, string task);
+    
 
-    function createTasks(address _addr, string memory _task) public {
-        Todo storage todos = todo[_addr];
-        todos.task = _task;
-        todos.checked = false;
-        emit CreateTask(_addr, _task);
+    function createTasks(string memory _task) public {
+        todos.push(Todo({
+            task: _task,
+            checked: false
+        }));
     }
 
-    function readTasks(address _addr) public view returns (string memory, bool){
-        return (todo[_addr].task, todo[_addr].checked);
+    function readTasks(uint _index) public view returns (string memory, bool){
+        Todo storage routine = todos[_index];
+        return (routine.task, routine.checked);
     }
 
-    function updateTask(address _addr, string memory _task) public {
-        todo[_addr].task = _task;
+    function readAllTasks() public view returns (Todo[] memory) {
+        return todos;
     }
 
-    function toggleChecked(address _addr) public  {
-        todo[_addr].checked = todo[_addr].checked ? false : true;
+    function updateTask(uint _index, string memory _task) public {
+        Todo storage routine = todos[_index];
+                routine.task = _task;        
+        emit UpdateTask(_index, routine.task);
     }
 
-    function deleteTask(address _addr) public {
-        delete todo[_addr].task;
-        delete todo[_addr].checked;
-    }
-}
-        bool checked;
+    function toggleChecked(uint _index) public  {
+        todos[_index].checked = !todos[_index].checked;
     }
 
-    mapping(address => Todo) public todo;
-
-    event CreateTask(address indexed addr, string indexed task);
-
-    function createTasks(address _addr, string memory _task) public {
-        Todo storage todos = todo[_addr];
-        todos.task = _task;
-        todos.checked = false;
-        emit CreateTask(_addr, _task);
+    function deleteTask(uint _index) public {
+        delete todos[_index].task;
+        delete todos[_index].checked;
     }
 
-    function readTasks(address _addr) public view returns (string memory, bool){
-        return (todo[_addr].task, todo[_addr].checked);
-    }
-
-    function updateTask(address _addr, string memory _task) public {
-        todo[_addr].task = _task;
-    }
-
-    function toggleChecked(address _addr) public  {
-        todo[_addr].checked = todo[_addr].checked ? false : true;
-    }
-
-    function deleteTask(address _addr) public {
-        delete todo[_addr].task;
-        delete todo[_addr].checked;
+    function deleteAllTask() public {
+        delete todos;
     }
 }
